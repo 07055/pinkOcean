@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  /* This maps the utility classes like bg-background or text-primary */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-primary: hsl(var(--primary));
+  --color-accent: hsl(var(--accent));
+  --color-pink-hot: #ff007f; /* You can also add hex codes here */
+}
+
+@layer base {
+  :root {
+    --background: 230 50% 3%;   /* Deep Midnight Ocean */
+    --foreground: 210 40% 98%;
+    --card: 230 50% 5%;
+    --primary: 332 100% 50%;    /* Neon Pink */
+    --primary-foreground: 210 40% 98%;
+    --accent: 190 90% 50%;      /* Ocean Blue */
+    --border: 217.2 32.6% 17.5%;
+  }
+}
+
+body {
+  /* Now bg-background will work because of the @theme block above */
+  @apply bg-background text-foreground;
+  font-family: 'Inter', sans-serif;
+}

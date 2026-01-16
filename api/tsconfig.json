@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /* Base Options */
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "NodeNext",                // Required for ESM + Node.js 20+
+    "moduleResolution": "NodeNext",      // Ensures Prisma 7 imports work correctly
+    "baseUrl": ".",
+    "paths": {
+      "@prisma-client": ["src/generated/prisma/client"] 
+    },
+
+    /* ESM & Interop */
+    "esModuleInterop": true,             // Important for 'express' and 'pg' imports
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,                // Speeds up build; ignores type errors in node_modules
+
+    /* Strictness */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Prisma 7 Specifics */
+    "allowImportingTsExtensions": false, // Change to false for NodeNext compatibility
+    "noEmit": true,                      // Keep true if you only use 'tsx' or 'vite' to run
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "prisma.config.ts"], // Include the new Prisma 7 config file
+  "exclude": ["node_modules"]
+}

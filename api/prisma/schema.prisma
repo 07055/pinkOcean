@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+// --- USER SYSTEM ---
+model User {
+  id          String   @id @default(uuid())
+  username    String   @unique
+  email       String   @unique
+  password    String    
+  profilePic  String?
+  banner      String?
+  bio         String?   @db.VarChar(25)
+  
+  sources     Source[]
+  likes       Like[]
+  comments    Comment[] 
+  marks       Mark[]    
+  shares      Share[]   
+  downloads   Download[]
+  activities  UserActivity[] 
+
+  // Follower System
+  followers   Follows[] @relation("following")
+  following   Follows[] @relation("follower")
+
+  // Safety & Moderation
+  reportsMade Report[]  @relation("reporter")
+  blocks      Block[]   @relation("blocker")
+  blockedBy   Block[]   @relation("blocked")
+  
+  mentionedIn Source[]  @relation("mentions")
+}
+
+// --- CONTENT SYSTEM ---
+model Source {
+  id           String    @id @default(uuid())
+  title        String?
+  synopsis     String?
+  content      String    @db.Text
+  media        String[]  // Cloudinary URLs
+  tags         String[]
+  
+  // LIVE & DESIGN LOGIC
+  isLive       Boolean   @default(false)
+  playbackUrl  String?   // URL for viewers to watch the live stream
+  isDesign     Boolean   @default(false)
+  designData   Json?     // Stores layers, shapes, and text
+  
+  deletedAt    DateTime? 
+  createdAt    DateTime  @default(now())
+  
+  author       User      @relation(fields: [authorId], references: [id])
+  authorId     String
+  
+  likes        Like[]
+  comments     Comment[] 
+  marks        Mark[]    
+  shares       Share[]   
+  downloads    Download[]
+  reports      Report[]  
+  activities   UserActivity[] 
+  mentions     User[]    @relation("mentions")
+}
+
+// --- INTERACTION MODELS ---
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+
+  @@unique([userId, sourceId]) // Prevents double-liking
+}
+
+model Mark {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sourceId]) 
+}
+
+model Share {
+  id        String   @id @default(uuid())
+  platform  String?  
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String? 
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+}
+
+model Download {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  ipAddress String?  
+  device    String?  
+
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String? 
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+}
+
+// --- SOCIAL & SAFETY MODELS ---
+
+model Follows {
+  follower    User   @relation("follower", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("following", fields: [followingId], references: [id])
+  followingId String
+
+  @@id([followerId, followingId])
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blocker   User     @relation("blocker", fields: [blockerId], references: [id])
+  blockerId String
+  blocked   User     @relation("blocked", fields: [blockedId], references: [id])
+  blockedId String
+
+  @@unique([blockerId, blockedId])
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  reason     String   
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  reporter   User     @relation("reporter", fields: [reporterId], references: [id])
+  reporterId String
+  source     Source   @relation(fields: [sourceId], references: [id])
+  sourceId   String
+}
+
+// --- ML DATA ENGINE ---
+
+model UserActivity {
+  id        String   @id @default(uuid())
+  type      String   // "VIEW", "WATCH_TIME", "DOWNLOAD_INITIATED"
+  duration  Int?     
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  String
+}
