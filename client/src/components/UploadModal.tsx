@@ -50,6 +50,8 @@ export default function UploadModal() {
     setLoading(true);
     try {
       const uploadedUrls: string[] = [];
+      
+      // Upload media files one by one
       for (const item of mediaFiles) {
         const formData = new FormData();
         formData.append("file", item.file);
@@ -57,9 +59,12 @@ export default function UploadModal() {
         uploadedUrls.push(res.data.url);
       }
 
+      // POST to backend with required synopsis field
       await api.post("/sources", {
-        title,
+        title: title || "Untitled Wave",
         content,
+        // BUG FIX: Generate synopsis to satisfy Prisma schema
+        synopsis: content ? content.substring(0, 100) : "Media post",
         media: uploadedUrls,
         isDesign: false
       });
@@ -68,7 +73,9 @@ export default function UploadModal() {
       resetAll();
       window.location.reload();
     } catch (err) {
-      alert("Failed to share story.");
+      // Professional debugging: See the error in F12 console
+      console.error("Upload error details:", err);
+      alert("Failed to share story. Check console for details.");
     } finally {
       setLoading(false);
     }
@@ -154,6 +161,7 @@ export default function UploadModal() {
                   )}
                   <Button 
                     size="icon" 
+                    type="button"
                     className="absolute top-1 right-1 h-6 w-6 bg-black/60 hover:bg-pink-hot"
                     onClick={() => {
                       const updated = [...mediaFiles];
