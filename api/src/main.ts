@@ -30,10 +30,9 @@ const app = express();
 
 // Enable CORS so your frontend (5173) can talk to your backend (3000)
 app.use(cors({
-  // This allows local dev AND your future live website
   origin: [
     "http://localhost:5173", 
-    "https://your-frontend-link.vercel.app" // Add your actual frontend URL here later
+    "https://pink-ocean-qlq2.vercel.app" // Your actual live frontend
   ],
   credentials: true, 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],

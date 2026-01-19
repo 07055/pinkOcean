@@ -69,12 +69,12 @@ export const login = async (req: Request, res: Response) => {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,      // Required for cross-site cookies
+        sameSite: "none",  // Required for cross-site cookies
         maxAge: age,
       })
       .status(200)
-      .json({ ...userInfo, token }); 
+      .json({ ...userInfo, token });
 
   } catch (err) {
     console.error(err);
