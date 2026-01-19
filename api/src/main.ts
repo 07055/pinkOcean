@@ -30,12 +30,15 @@ const app = express();
 
 // Enable CORS so your frontend (5173) can talk to your backend (3000)
 app.use(cors({
-  origin: "http://localhost:5173",
+  // This allows local dev AND your future live website
+  origin: [
+    "http://localhost:5173", 
+    "https://your-frontend-link.vercel.app" // Add your actual frontend URL here later
+  ],
   credentials: true, 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -92,7 +95,9 @@ app.post("/safety/report", verifyToken, reportSource);
 app.post("/activity/log", logActivity);
 
 // --- SERVER START ---
-app.listen(3000, () => {
-  console.log("🌊 Pink Ocean API running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(Number(PORT), "0.0.0.0", () => {
+  console.log(`🌊 Pink Ocean API running on port ${PORT}`);
   startCleanupTask();
 });
