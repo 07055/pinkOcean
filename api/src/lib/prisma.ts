@@ -1,5 +1,5 @@
 // If your file is in api/src/lib/prisma.ts
-import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaClient } from '@prisma/client'; // ✅ Standard way
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import "dotenv/config";
