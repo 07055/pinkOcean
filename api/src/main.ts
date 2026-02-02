@@ -32,7 +32,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173", 
-    "https://pink-ocean-qlq2.vercel.app" // Your actual live frontend
+    "https://pink-ocean-qlq2.vercel.app",
+    "https://pink-ocean-ka4z.vercel.app" // Add this one from your screenshot!
   ],
   credentials: true, 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
